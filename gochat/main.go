@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"golearning/gochat"
 	"time"
+
+	"github.com/Zhan9Yunhua/gochat"
 )
 
 func main() {
