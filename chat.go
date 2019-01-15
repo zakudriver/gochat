@@ -121,12 +121,6 @@ func (c *Chat) post(url string, params map[string]interface{}) ([]byte, error) {
 
 // 执行登录步骤
 func (c *Chat) Start() {
-	// c.run("=> uuidMarauder ...", c.uuidMarauder)
-	// c.run("=> qrcodeMarauder ...", c.qrcodeMarauder)
-	// c.run("=> qrcodeHttpCreator ...", c.qrcodeHttpCreator)
-	// c.run("=> loginExecutor ...", c.loginExecutor)
-	// c.run("=> initExecutor ...", c.initExecutor)
-	// c.run("=> contactMarauder ...", c.contactMarauder)
 
 	funcMap := map[string]func() error{
 		"uuidMarauder":      c.uuidMarauder,
@@ -144,26 +138,6 @@ func (c *Chat) Start() {
 		logInfo(fmt.Sprintf("=> %s ...", k))
 	}
 }
-
-// 运行各步骤
-// func (c *Chat) run(des string, fc func() error) {
-// 	if err := fc(); err != nil {
-// 		logErr(err.Error())
-// 	}
-
-// 	logInfo(des)
-// }
-
-// func (c *Chat) runFunc(funcer ...interface{}) {
-// 	for _, fc := range funcer {
-// 		v := reflect.ValueOf(fc)
-// 		if v.Kind() != reflect.Func {
-// 			logErr("not is func")
-// 		}
-// 		v.Call(nil)
-
-// 	}
-// }
 
 // ======================== 步骤 ========================
 
