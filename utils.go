@@ -38,7 +38,7 @@ func qrcodeHandler(b []byte) error {
 		return err
 	}
 
-	f, err := os.Create("src/qrcode.png")
+	f, err := os.Create("qrcode.png")
 	defer f.Close()
 	if err != nil {
 		return err
