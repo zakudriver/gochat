@@ -138,6 +138,17 @@ func (c *Chat) run(des string, fc func() error) {
 	logInfo(des)
 }
 
+// func (c *Chat) runFunc(funcer ...interface{}) {
+// 	for _, fc := range funcer {
+// 		v := reflect.ValueOf(fc)
+// 		if v.Kind() != reflect.Func {
+// 			logErr("not is func")
+// 		}
+// 		v.Call(nil)
+
+// 	}
+// }
+
 // ======================== 步骤 ========================
 
 /*
