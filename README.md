@@ -1,13 +1,13 @@
 # gochat
 golang 模拟web微信登录 发送消息
 
-## 使用
+### 使用
 
 ```
 go get github.com/Zhan9Yunhua/gochat
 ```
 
-## 步骤
+### 步骤
 
 - 获取UUID -> uuidMarauder
 - 根据UUID获取二维码 -> qrcodeMarauder
@@ -16,6 +16,6 @@ go get github.com/Zhan9Yunhua/gochat
 - 初始化微信信息 -> initExecutor
 - 获取通讯录 -> contactMarauder
 
-## 方法
+### 方法
 
 - 发送信息 SendMessage(nickName string, content string)
