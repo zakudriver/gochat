@@ -14,7 +14,7 @@ func main() {
 	})
 	c.Start()
 	for {
-		c.SendMessage("YinT1e Ji", fmt.Sprintf("* test  send a message to YinT1e Ji* %s", time.Now()))
-		time.Sleep(time.Second * 60)
+		c.SendMessage("xxx", fmt.Sprintf("## <test>  send a message to xxx ## ---> %s", time.Now()))
+		time.Sleep(time.Second * 10)
 	}
 }
