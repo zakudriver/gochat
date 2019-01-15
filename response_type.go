@@ -1,7 +1,7 @@
 package gochat
 
 // 登录返回数据
-type LoginSt struct {
+type LoginInfoSt struct {
 	Ret         int    `xml:"ret"`
 	Skey        string `xml:"skey"`
 	Wxsid       string `xml:"wxsid"`
@@ -11,7 +11,7 @@ type LoginSt struct {
 }
 
 // 初始化返回
-type InitSt struct {
+type InitInfoSt struct {
 	BaseResponse        BaseResponseSt     `json:"BaseResponse"`
 	Count               int                `json:"Count"`
 	ContactList         []ContactSt        `json:"ContactList"`

@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"gochat"
 	"time"
-
-	"github.com/Zhan9Yunhua/gochat"
+	// "github.com/Zhan9Yunhua/gochat"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 	c.Start()
 
 	// ！昵称！毕竟有些没备注
-	nickName := "微信昵称"
+	nickName := "Y。"
 	for {
 		c.SendMessage(nickName, fmt.Sprintf("## [test]  send a message to %s ## ---> %s", nickName, time.Now()))
 		time.Sleep(time.Second * 10)

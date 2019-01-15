@@ -38,8 +38,8 @@ type Chat struct {
 	qrcode       []byte
 	QrcodeProt   int
 	IsQrcodeFile bool
-	loginSt      LoginSt
-	userSt       UserSt
+	loginInfo    LoginInfoSt
+	user         UserSt
 	contacts     map[string]ContactSt
 	deviceID     string
 	client       *http.Client
@@ -121,21 +121,15 @@ func (c *Chat) post(url string, params map[string]interface{}) ([]byte, error) {
 
 // 执行登录步骤
 func (c *Chat) Start() {
+	funcs := []func() error{c.uuidMarauder, c.qrcodeMarauder, c.qrcodeHttpCreator, c.loginExecutor, c.initExecutor, c.contactMarauder}
+	desc := []string{"uuidMarauder", "qrcodeMarauder", "qrcodeHttpCreator", "loginExecutor", "initExecutor", "contactMarauder"}
 
-	funcMap := map[string]func() error{
-		"uuidMarauder":      c.uuidMarauder,
-		"qrcodeMarauder":    c.qrcodeMarauder,
-		"qrcodeHttpCreator": c.qrcodeHttpCreator,
-		"loginExecutor":     c.loginExecutor,
-		"initExecutor":      c.initExecutor,
-		"contactMarauder":   c.contactMarauder,
-	}
-	for k, v := range funcMap {
+	for i, v := range funcs {
 		if err := v(); err != nil {
 			logErr(err.Error())
 		}
 
-		logInfo(fmt.Sprintf("=> %s ...", k))
+		logInfo(fmt.Sprintf("=> %s ...", desc[i]))
 	}
 }
 
@@ -311,13 +305,13 @@ func (c *Chat) redirect() error {
 		return errHandler("redirect get", err)
 	}
 
-	var rSt LoginSt
+	var rSt LoginInfoSt
 	if err := xml.Unmarshal(r, &rSt); err != nil {
 		return errHandler("redirect xmlUnmarshal", err)
 	}
 	fmt.Printf("%+v\n", rSt)
 
-	c.loginSt = rSt
+	c.loginInfo = rSt
 
 	baseReq["Uin"] = rSt.Wxuin
 	baseReq["Sid"] = rSt.Wxsid
@@ -332,7 +326,7 @@ func (c *Chat) redirect() error {
 	response InitSt
 */
 func (c *Chat) initExecutor() error {
-	url := fmt.Sprintf("%s/webwxinit?pass_ticket=%s&skey=%s&r=%s", baseURL, c.loginSt.PassTicket, c.loginSt.Skey, c.timestamp())
+	url := fmt.Sprintf("%s/webwxinit?pass_ticket=%s&skey=%s&r=%s", baseURL, c.loginInfo.PassTicket, c.loginInfo.Skey, c.timestamp())
 	params := make(map[string]interface{})
 	params["BaseRequest"] = baseReq
 	r, err := c.post(url, params)
@@ -340,12 +334,12 @@ func (c *Chat) initExecutor() error {
 		return errHandler("initExecutor post", err)
 	}
 
-	var rSt InitSt
+	var rSt InitInfoSt
 	if err := json.Unmarshal(r, &rSt); err != nil {
 		return errHandler("redirect jsonUnmarshal", err)
 	}
 
-	c.userSt = rSt.User
+	c.user = rSt.User
 
 	return nil
 }
@@ -355,7 +349,7 @@ func (c *Chat) initExecutor() error {
 	response ContactListSt
 */
 func (c *Chat) contactMarauder() error {
-	url := fmt.Sprintf("%s/webwxgetcontact?sid=%s&skey=%s&pass_ticket=%s", baseURL, c.loginSt.Wxsid, c.loginSt.Skey, c.loginSt.PassTicket)
+	url := fmt.Sprintf("%s/webwxgetcontact?sid=%s&skey=%s&pass_ticket=%s", baseURL, c.loginInfo.Wxsid, c.loginInfo.Skey, c.loginInfo.PassTicket)
 	params := make(map[string]interface{})
 	params["BaseRequest"] = baseReq
 
@@ -386,7 +380,7 @@ func (c *Chat) SendMessage(nickName string, content string) error {
 		return err
 	}
 
-	url := fmt.Sprintf("%s/webwxsendmsg?pass_ticket=%s", baseURL, c.loginSt.PassTicket)
+	url := fmt.Sprintf("%s/webwxsendmsg?pass_ticket=%s", baseURL, c.loginInfo.PassTicket)
 	clientMsgID := c.timestamp() + "0" + strconv.Itoa(rand.Int())[3:6]
 	params := make(map[string]interface{})
 	params["BaseRequest"] = baseReq
@@ -394,7 +388,7 @@ func (c *Chat) SendMessage(nickName string, content string) error {
 	msg := make(map[string]interface{})
 	msg["Type"] = 1
 	msg["Content"] = content
-	msg["FromUserName"] = c.userSt.UserName
+	msg["FromUserName"] = c.user.UserName
 	msg["ToUserName"] = contact.UserName
 	msg["LocalID"] = clientMsgID
 	msg["ClientMsgId"] = clientMsgID
