@@ -409,7 +409,7 @@ func (c *Chat) SendMessage(nickName string, content string) error {
 
 /*
 	发送消息
-	part 1
+	part 2
 */
 func (c *Chat) contactsPredator(nickName string) (ContactSt, error) {
 	if v, ok := c.contacts[nickName]; ok {

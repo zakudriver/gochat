@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"gochat"
 	"time"
-	// "github.com/Zhan9Yunhua/gochat"
+
+	"github.com/Zhan9Yunhua/gochat"
 )
 
 func main() {
