@@ -14,7 +14,7 @@ func main() {
 	})
 	c.Start()
 	for {
-		c.SendMessage("xxx", fmt.Sprintf("## <test>  send a message to xxx ## ---> %s", time.Now()))
+		c.SendMessage("微信昵称", fmt.Sprintf("## <test>  send a message to $微信昵称 ## ---> %s", time.Now()))
 		time.Sleep(time.Second * 10)
 	}
 }
