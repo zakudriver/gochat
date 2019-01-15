@@ -119,17 +119,27 @@ func (c *Chat) post(url string, params map[string]interface{}) ([]byte, error) {
 	return ioutil.ReadAll(res.Body)
 }
 
+type Funcers struct {
+	funcer func() error
+	desc   string
+}
+
 // 执行登录步骤
 func (c *Chat) Start() {
-	funcs := []func() error{c.uuidMarauder, c.qrcodeMarauder, c.qrcodeHttpCreator, c.loginExecutor, c.initExecutor, c.contactMarauder}
-	desc := []string{"uuidMarauder", "qrcodeMarauder", "qrcodeHttpCreator", "loginExecutor", "initExecutor", "contactMarauder"}
+	f := []Funcers{
+		{c.uuidMarauder, "uuidMarauder"},
+		{c.qrcodeMarauder, "qrcodeMarauder"},
+		{c.qrcodeHttpCreator, "qrcodeHttpCreator"},
+		{c.loginExecutor, "loginExecutor"},
+		{c.initExecutor, "initExecutor"},
+		{c.contactMarauder, "contactMarauder"}}
 
-	for i, v := range funcs {
-		if err := v(); err != nil {
+	for _, v := range f {
+		if err := v.funcer(); err != nil {
 			logErr(err.Error())
 		}
 
-		logInfo(fmt.Sprintf("=> %s ...", desc[i]))
+		logInfo(fmt.Sprintf("=> %s ...", v.desc))
 	}
 }
 
@@ -171,7 +181,6 @@ func (c *Chat) uuidMarauder() error {
 
 	if m[codeKey] == "200" {
 		c.uuid = m[uuidKey]
-		fmt.Println(m[uuidKey])
 		return nil
 	} else {
 		return errHandler("uuidMarauder code", errors.New("400"))
@@ -255,7 +264,6 @@ func (c *Chat) loginExecutor() error {
 
 		re := regexp.MustCompile(`window.code=(\d+);`)
 		codes := re.FindStringSubmatch(resStr)
-		fmt.Println(codes)
 		if len(codes) > 1 {
 			switch codes[1] {
 			case "200":
