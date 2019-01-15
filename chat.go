@@ -19,18 +19,18 @@ import (
 const (
 	UUIDBaseURL  = "https://login.wx.qq.com"
 	LoginBaseURL = "https://login.weixin.qq.com"
-	WxReferer    = "https://login.weixin.qq.com/?lang=zh_CN"
-	WxUserAgent  = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
-	AppId        = "wx782c26e4c19acffb"
+	RefererURL   = "https://login.weixin.qq.com/?lang=zh_CN"
+	UserAgent    = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
+	AppID        = "wx782c26e4c19acffb"
 	QrocdeURL    = "https://wx.qq.com/qrcode"
-	Redirect_uri = "https%3A%2F%2Flogin.weixin.qq.com%2Fcgi-bin%2Fmmwebwx-bin%2Fwebwxnewloginpage"
+	RedirectURL  = "https%3A%2F%2Flogin.weixin.qq.com%2Fcgi-bin%2Fmmwebwx-bin%2Fwebwxnewloginpage"
 )
 
 var (
-	isClose     = make(chan int, 1)
-	baseURL     string
-	redirectURL string
-	baseReq     = make(map[string]interface{})
+	isCloseQRServer = make(chan int, 1)
+	baseURL         string
+	redirectURL     string
+	baseReq         = make(map[string]interface{})
 )
 
 type Chat struct {
@@ -82,8 +82,8 @@ func (c *Chat) get(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Referer", WxReferer)
-	req.Header.Add("User-agent", WxUserAgent)
+	req.Header.Add("Referer", RefererURL)
+	req.Header.Add("User-agent", UserAgent)
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -107,8 +107,8 @@ func (c *Chat) post(url string, params map[string]interface{}) ([]byte, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/json;charset=utf-8")
-	req.Header.Add("Referer", WxReferer)
-	req.Header.Add("User-agent", WxUserAgent)
+	req.Header.Add("Referer", RefererURL)
+	req.Header.Add("User-agent", UserAgent)
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -149,7 +149,7 @@ func (c *Chat) uuidMarauder() error {
 		return nil
 	}
 
-	url := fmt.Sprintf("%s/jslogin?appid=%s&redirect_uri=%s&fun=new&lang=zh_CN&_=%s", UUIDBaseURL, AppId, Redirect_uri, c.timestamp())
+	url := fmt.Sprintf("%s/jslogin?appid=%s&redirect_uri=%s&fun=new&lang=zh_CN&_=%s", UUIDBaseURL, AppID, RedirectURL, c.timestamp())
 	r, err := c.get(url)
 	if err != nil {
 		return errHandler("uuidMarauder http", err)
@@ -232,7 +232,7 @@ func (c *Chat) qrcodeHttpServr() {
 	})
 	go func() {
 		select {
-		case <-isClose:
+		case <-isCloseQRServer:
 			logInfo("QRcode HttpServer is closed.")
 			ser.Close()
 		}
@@ -265,7 +265,7 @@ func (c *Chat) loginExecutor() error {
 			switch codes[1] {
 			case "200":
 				logInfo("login success, to redirect...")
-				isClose <- 1
+				isCloseQRServer <- 1
 				re := regexp.MustCompile(`window.redirect_uri="(\S+?)";`)
 				rURLs := re.FindStringSubmatch(resStr)
 
