@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/http/cookiejar"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -244,6 +245,9 @@ func (c *Chat) qrcodeHttpServr() {
 
 	logInfo(fmt.Sprintf("QRcode HttpServer is working, Port: %d.", c.QrcodeProt))
 	ser.ListenAndServe()
+
+	exec.Command("explorer", fmt.Sprintf("http://localhost:%d", c.QrcodeProt))
+	logInfo("explorer is opening")
 }
 
 /*
