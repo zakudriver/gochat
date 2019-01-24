@@ -244,10 +244,15 @@ func (c *Chat) qrcodeHttpServr() {
 	}()
 
 	logInfo(fmt.Sprintf("QRcode HttpServer is working, Port: %d.", c.QrcodeProt))
-	ser.ListenAndServe()
 
-	exec.Command("explorer", fmt.Sprintf("http://localhost:%d", c.QrcodeProt))
-	logInfo("explorer is opening")
+	cmd := exec.Command("explorer", fmt.Sprintf("http://localhost:%d", c.QrcodeProt))
+	if err := cmd.Start(); err == nil {
+		logInfo("Explorer is opening")
+	} else {
+		fmt.Println(fmt.Sprintf("Explorer open fail, access port %d", c.QrcodeProt))
+	}
+
+	ser.ListenAndServe()
 }
 
 /*
