@@ -4,7 +4,7 @@ golang 模拟web微信登录 发送消息
 ### 使用
 
 ```
-go get github.com/dingansichKum0/gochat
+go get github.com/zakudriver/gochat
 ```
 
 ### 步骤
